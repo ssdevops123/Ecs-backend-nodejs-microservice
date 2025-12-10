@@ -7,7 +7,7 @@ github_repo        = "sowjanya/sampleproject"
 github_branch      = "main"
 
 
-// recupe_dev_app_sg = ["sg-0c3d3c3032a0ff1e2"]# Copy Recupe Dev Application security groups to attach to ECS tasks
+
 recupe_dev_app_sg = ["sg-Z1"]
 
 github_connection_arn = "arn:aws:codestar-connections:us-west-2:136279434049:connection/bce23acd-20cf-4659-a6a1-60fe63d3dea3"
@@ -18,4 +18,5 @@ ecs_env_file_s3_path = "s3://s3-bucketname/api-sandbox/env-variables/newdb.env"
 
 ecs_cpu    = 256  //deafult value= 256
 ecs_memory = 512  //default value= 512
+
 
