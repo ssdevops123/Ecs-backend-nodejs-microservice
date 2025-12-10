@@ -1,0 +1,43 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+
+  pre_build:
+    commands:
+      - echo "Setting up image tags..."
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-8)
+      - TIMESTAMP=$(date +%Y%m%d%H%M%S)
+      - IMAGE_TAG=${COMMIT_HASH}-${TIMESTAMP}
+
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME
+
+      - echo "Image tag $IMAGE_TAG"
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $REPOSITORY_NAME:$IMAGE_TAG .
+
+      - echo "Tagging images..."
+      - docker tag $REPOSITORY_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      - echo "Pushing Docker images to ECR..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+      - echo "Creating image definitions for deployment..."
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
+      - echo "Successfully pushed image $REPOSITORY_NAME:$IMAGE_TAG"
+
+artifacts:
+  files:
+    - imagedefinitions.json
