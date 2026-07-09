@@ -3,7 +3,7 @@ environment        = "qa"
 vpc_id             = "vpc"  # This is DEV VPC
 public_subnet_ids  = ["subnet-x1", "subnet-x2"] # DEV Public Subnets
 private_subnet_ids = ["subnet-y1", "subnet-y2"] # DEV Private Subnets
-github_repo        = "sowjanya/sampleproject"
+github_repo        = "sowjanya/myproject"
 github_branch      = "main"
 
 
